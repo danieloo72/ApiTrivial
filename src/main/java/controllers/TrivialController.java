@@ -2,7 +2,7 @@ package controllers;
 
 import com.google.gson.JsonObject;
 import com.sun.net.httpserver.HttpExchange;
-import org.example.HttpClientTrivial;
+import org.example.TrivialService;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -21,24 +21,19 @@ public class TrivialController {
         try {
             String apiUrl;
 
-            if (path.equals("/trivial/videoGame")) {
-                apiUrl = "https://opentdb.com/api.php?amount=10&category=15&difficulty=easy";
-                HttpRequest request = HttpRequest.newBuilder(URI.create(apiUrl)).GET().build();
-
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-                JsonObject result = HttpClientTrivial.getPregunta(response.body());
+            if (path.equals("/trivial/videogame")) {
+                JsonObject result = TrivialService.getPregunta(path, client);
                 sendResponse(exchange, 200, result.toString());
                 return;
             }
 
-            if (path.equals("/trivial/boardgame")) {
+            if (path.equals("/trivial/boardGame")) {
                 apiUrl = "https://opentdb.com/api.php?amount=10&category=16&difficulty=medium";
                 HttpRequest request = HttpRequest.newBuilder(URI.create(apiUrl)).GET().build();
 
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-                JsonObject result = HttpClientTrivial.getPregunta(response.body());
+                JsonObject result = TrivialService.getPregunta(path, client);
                 sendResponse(exchange, 200, result.toString());
                 return;
             }
@@ -49,16 +44,16 @@ public class TrivialController {
 
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-                JsonObject result = HttpClientTrivial.getPregunta(response.body());
+                JsonObject result = TrivialService.getPregunta(path, client);
                 sendResponse(exchange, 200, result.toString());
                 return;
             }
 
-            if (path.startsWith("/dogs/img/")) {
-                String response = HttpClientTrivial.getImages(path, client);
-                sendResponse(exchange, 200, response);
-                return;
-            }
+//            if (path.startsWith("/dogs/img/")) {
+//                String response = HttpClientTrivial.getImages(path, client);
+//                sendResponse(exchange, 200, response);
+//                return;
+//            }
 
             sendResponse(exchange, 404, "{\"error\": \"Endpoint no válido\"}");
 

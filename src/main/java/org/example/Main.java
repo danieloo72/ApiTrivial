@@ -15,6 +15,6 @@ public class Main {
         server.setExecutor(null);
         server.start();
 
-        System.out.println("Servidor iniciado en http://localhost:8080/trivial/videoGame");
+        System.out.println("Servidor iniciado en http://localhost:8080");
     }
 }
