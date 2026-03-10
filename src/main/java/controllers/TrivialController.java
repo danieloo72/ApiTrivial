@@ -23,7 +23,7 @@ public class TrivialController {
 
             if (path.equals("/trivial/videogame")) {
                 JsonObject result = TrivialService.getPregunta(path, client);
-                sendResponse(exchange, 200, result.toString());
+                sendResponse(exchange, 200, result.getAsString());
                 return;
             }
 

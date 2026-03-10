@@ -20,6 +20,19 @@ public class TrivialService {
 
     public static JsonObject getPregunta(String path, HttpClient client) throws IOException, InterruptedException {
 
+//        String[] urlPart = path.split("/");
+
+        if (path.endsWith("/videogame")) {
+            HttpRequest request = HttpRequest.newBuilder(URI.create(videogame)).GET().build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } else if (path.endsWith("/boardgame")) {
+            HttpRequest request = HttpRequest.newBuilder(URI.create(boardgame)).GET().build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } else if (path.endsWith("/sport")) {
+            HttpRequest request = HttpRequest.newBuilder(URI.create(sport)).GET().build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        }
+
         JsonObject jsonRaiz = gson.fromJson(response, JsonObject.class);
         JsonArray results = jsonRaiz.getAsJsonArray("results");
 
@@ -27,28 +40,23 @@ public class TrivialService {
         JsonArray listaRespuestas = new JsonArray();
 
             for (JsonElement element : results) {
-                JsonArray opciones = results.getAsJsonArray();
-                    JsonObject pregunta = new JsonObject();
+                JsonObject pregunta = element.getAsJsonObject();
+                JsonObject enunciado = new JsonObject();
 
-                    pregunta.addProperty("type", pregunta.get("tipo").getAsString());
-                    pregunta.addProperty("difficulty", pregunta.get("difficulty").getAsString());
-                    pregunta.addProperty("category", pregunta.get("category").getAsString());
-                    pregunta.addProperty("question", pregunta.get("pregunta").getAsString());
+                enunciado.addProperty("type", pregunta.get("type").getAsString());
+                enunciado.addProperty("difficulty", pregunta.get("difficulty").getAsString());
+                enunciado.addProperty("category", pregunta.get("category").getAsString());
+                enunciado.addProperty("question", pregunta.get("pregunta").getAsString());
 
-                    pregunta.addProperty("correct_answer", pregunta.get("respuesta correcta").getAsString());
-                    pregunta.add("incorrect_answers", pregunta.get("opciones").getAsJsonArray());
+                enunciado.addProperty("correct_answer", pregunta.get("respuesta correcta").getAsString());
+                enunciado.add("incorrect_answers", pregunta.get("opciones").getAsJsonArray());
 
-                    listaRespuestas.add(pregunta);
+                listaRespuestas.add(enunciado);
             }
 
         responseJson.add("preguntas", listaRespuestas);
 
-        String apiUrl = "https://opentdb.com/api.php?amount=10&category=15&difficulty=easy";
-
-        HttpRequest request = HttpRequest.newBuilder(URI.create(apiUrl)).GET().build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        return response.body();
+        return responseJson;
     }
 
 //    public static String getImages(String path, HttpClient client) throws IOException, InterruptedException {
