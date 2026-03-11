@@ -20,54 +20,53 @@ public class TrivialService {
 
     public static JsonObject getPregunta(String path, HttpClient client) throws IOException, InterruptedException {
 
-//        String[] urlPart = path.split("/");
+//        String[] urlPart = path.split("&quot;");
 
         if (path.endsWith("/videogame")) {
-            HttpRequest request = HttpRequest.newBuilder(URI.create(videogame)).GET().build();
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            path = videogame;
         } else if (path.endsWith("/boardgame")) {
-            HttpRequest request = HttpRequest.newBuilder(URI.create(boardgame)).GET().build();
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            path = boardgame;
         } else if (path.endsWith("/sport")) {
-            HttpRequest request = HttpRequest.newBuilder(URI.create(sport)).GET().build();
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            path = sport;
         }
 
-        JsonObject jsonRaiz = gson.fromJson(response, JsonObject.class);
+        String urlRequest = getRequest(path, client);
+        JsonObject jsonRaiz = gson.fromJson(urlRequest, JsonObject.class);
         JsonArray results = jsonRaiz.getAsJsonArray("results");
 
         JsonObject responseJson = new JsonObject();
-        JsonArray listaRespuestas = new JsonArray();
+        JsonArray listaPreguntas = new JsonArray();
 
             for (JsonElement element : results) {
                 JsonObject pregunta = element.getAsJsonObject();
                 JsonObject enunciado = new JsonObject();
 
-                enunciado.addProperty("type", pregunta.get("type").getAsString());
-                enunciado.addProperty("difficulty", pregunta.get("difficulty").getAsString());
-                enunciado.addProperty("category", pregunta.get("category").getAsString());
-                enunciado.addProperty("question", pregunta.get("pregunta").getAsString());
+                enunciado.addProperty("question", pregunta.get("question").getAsString());
+                System.out.println(pregunta.get("question").getAsString());
 
-                enunciado.addProperty("correct_answer", pregunta.get("respuesta correcta").getAsString());
-                enunciado.add("incorrect_answers", pregunta.get("opciones").getAsJsonArray());
 
-                listaRespuestas.add(enunciado);
+                enunciado.addProperty("correct_answer", pregunta.get("correct_answer").getAsString());
+                enunciado.add("incorrect_answers", pregunta.get("incorrect_answers").getAsJsonArray());
+
+                String respuestas = pregunta.get("correct_answer").getAsString() + pregunta.get("incorrect_answers").getAsString();
+                System.out.println(respuestas);
+
+                JsonArray opciones = new JsonArray();
+                opciones.add(respuestas);
+                for (JsonElement opcion : pregunta.get("opciones").getAsJsonArray()) {
+                    System.out.println(opcion.toString());
+                }
+                listaPreguntas.add(enunciado);
             }
 
-        responseJson.add("preguntas", listaRespuestas);
+        responseJson.add("preguntas", listaPreguntas);
 
         return responseJson;
     }
 
-//    public static String getImages(String path, HttpClient client) throws IOException, InterruptedException {
-//        String[] parts = path.split("/");
-//        String num = parts[parts.length - 1];
-//
-//        String apiUrl = "https://dog.ceo/api/breeds/image/random/" + num;
-//
-//        HttpRequest request = HttpRequest.newBuilder(URI.create(apiUrl)).GET().build();
-//        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-//
-//        return response.body();
-//    }
+    public static String getRequest(String path, HttpClient client) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder(URI.create(path)).GET().build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        return response.body();
+    }
 }

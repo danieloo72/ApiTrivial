@@ -19,41 +19,24 @@ public class TrivialController {
     public void handle(HttpExchange exchange) throws IOException {
         String path = exchange.getRequestURI().getPath();
         try {
-            String apiUrl;
 
             if (path.equals("/trivial/videogame")) {
                 JsonObject result = TrivialService.getPregunta(path, client);
-                sendResponse(exchange, 200, result.getAsString());
+                sendResponse(exchange, 200, result.toString());
                 return;
             }
 
             if (path.equals("/trivial/boardGame")) {
-                apiUrl = "https://opentdb.com/api.php?amount=10&category=16&difficulty=medium";
-                HttpRequest request = HttpRequest.newBuilder(URI.create(apiUrl)).GET().build();
-
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
                 JsonObject result = TrivialService.getPregunta(path, client);
                 sendResponse(exchange, 200, result.toString());
                 return;
             }
 
             if (path.equals("/trivial/sport")) {
-                apiUrl = "https://opentdb.com/api.php?amount=10&category=21&difficulty=hard";
-                HttpRequest request = HttpRequest.newBuilder(URI.create(apiUrl)).GET().build();
-
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
                 JsonObject result = TrivialService.getPregunta(path, client);
                 sendResponse(exchange, 200, result.toString());
                 return;
             }
-
-//            if (path.startsWith("/dogs/img/")) {
-//                String response = HttpClientTrivial.getImages(path, client);
-//                sendResponse(exchange, 200, response);
-//                return;
-//            }
 
             sendResponse(exchange, 404, "{\"error\": \"Endpoint no válido\"}");
 
