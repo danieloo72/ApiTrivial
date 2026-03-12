@@ -6,10 +6,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 
 public class TrivialService {
 
@@ -35,31 +37,44 @@ public class TrivialService {
         JsonArray results = jsonRaiz.getAsJsonArray("results");
 
         JsonObject responseJson = new JsonObject();
-        JsonArray listaPreguntas = new JsonArray();
+        JsonArray listaPreguntas2 = new JsonArray();
 
-            for (JsonElement element : results) {
-                JsonObject pregunta = element.getAsJsonObject();
-                JsonObject enunciado = new JsonObject();
+        for (JsonElement element : results) {
+            JsonObject pregunta = element.getAsJsonObject();
+            JsonObject listaPreguntas = new JsonObject();
 
-                enunciado.addProperty("question", pregunta.get("question").getAsString());
-                System.out.println(pregunta.get("question").getAsString());
+            String question = pregunta.get("question").getAsString();
+            listaPreguntas.addProperty("question", question);
+            System.out.println(question);
 
+            String correcto = pregunta.get("correct_answer").getAsString();
+            listaPreguntas.addProperty("correct_answer", correcto);
+            System.out.println(correcto);
 
-                enunciado.addProperty("correct_answer", pregunta.get("correct_answer").getAsString());
-                enunciado.add("incorrect_answers", pregunta.get("incorrect_answers").getAsJsonArray());
+            JsonArray incorrecto = pregunta.get("incorrect_answers").getAsJsonArray();
+            listaPreguntas.add("incorrect_answers", incorrecto);
+            System.out.println(incorrecto);
 
-                String respuestas = pregunta.get("correct_answer").getAsString() + pregunta.get("incorrect_answers").getAsString();
-                System.out.println(respuestas);
+//                String[] quest = question.split("&quot;");
+//                String q = quest[0];
+            String respuesta = correcto;
 
-                JsonArray opciones = new JsonArray();
-                opciones.add(respuestas);
-                for (JsonElement opcion : pregunta.get("opciones").getAsJsonArray()) {
-                    System.out.println(opcion.toString());
-                }
-                listaPreguntas.add(enunciado);
+            JsonArray opciones = new JsonArray();
+            opciones.add(respuesta);
+            for (JsonElement opcion : incorrecto) {
+                opciones.add(opcion);
             }
 
-        responseJson.add("preguntas", listaPreguntas);
+            System.out.println(opciones);
+            JsonObject opcionesEnunciado = new JsonObject();
+
+            opcionesEnunciado.add("opciones", opciones);
+            listaPreguntas.add("opciones", opciones);
+//            listaPreguntas.add("opciones", opcionesEnunciado);
+                listaPreguntas2.add(listaPreguntas);
+        }
+
+        responseJson.add("preguntas", listaPreguntas2);
 
         return responseJson;
     }
