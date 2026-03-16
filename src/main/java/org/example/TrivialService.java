@@ -17,18 +17,18 @@ public class TrivialService {
 
     private final static Gson gson = new Gson();
     private final static String videogame = new String("https://opentdb.com/api.php?amount=10&category=15&difficulty=easy");
-    private final static String boardgame = new String("https://opentdb.com/api.php?amount=10&category=15&difficulty=easy");
-    private final static String sport = new String("https://opentdb.com/api.php?amount=10&category=15&difficulty=easy");
+    private final static String boardgame = new String("https://opentdb.com/api.php?amount=10&category=16&difficulty=medium");
+    private final static String sport = new String("https://opentdb.com/api.php?amount=10&category=21&difficulty=hard");
 
     public static JsonObject getPregunta(String path, HttpClient client) throws IOException, InterruptedException {
 
 //        String[] urlPart = path.split("&quot;");
 
-        if (path.endsWith("/videogame")) {
+        if (path.endsWith("/easy")) {
             path = videogame;
-        } else if (path.endsWith("/boardgame")) {
+        } else if (path.endsWith("/medium")) {
             path = boardgame;
-        } else if (path.endsWith("/sport")) {
+        } else if (path.endsWith("/hard")) {
             path = sport;
         }
 
@@ -66,9 +66,7 @@ public class TrivialService {
             }
 
             System.out.println(opciones);
-            JsonObject opcionesEnunciado = new JsonObject();
 
-            opcionesEnunciado.add("opciones", opciones);
             listaPreguntas.add("opciones", opciones);
 //            listaPreguntas.add("opciones", opcionesEnunciado);
                 listaPreguntas2.add(listaPreguntas);

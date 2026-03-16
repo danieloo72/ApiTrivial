@@ -17,22 +17,23 @@ public class TrivialController {
     private final HttpClient client = HttpClient.newHttpClient();
 
     public void handle(HttpExchange exchange) throws IOException {
+        addCorsHeaders(exchange);
         String path = exchange.getRequestURI().getPath();
         try {
 
-            if (path.equals("/trivial/videogame")) {
+            if (path.equals("/trivial/easy")) {
                 JsonObject result = TrivialService.getPregunta(path, client);
                 sendResponse(exchange, 200, result.toString());
                 return;
             }
 
-            if (path.equals("/trivial/boardGame")) {
+            if (path.equals("/trivial/medium")) {
                 JsonObject result = TrivialService.getPregunta(path, client);
                 sendResponse(exchange, 200, result.toString());
                 return;
             }
 
-            if (path.equals("/trivial/sport")) {
+            if (path.equals("/trivial/hard")) {
                 JsonObject result = TrivialService.getPregunta(path, client);
                 sendResponse(exchange, 200, result.toString());
                 return;
@@ -52,5 +53,11 @@ public class TrivialController {
         OutputStream os = exchange.getResponseBody();
         os.write(bytes);
         os.close();
+    }
+
+    private static void addCorsHeaders(HttpExchange exchange) {
+        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+        exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type, Authorization");
     }
 }
