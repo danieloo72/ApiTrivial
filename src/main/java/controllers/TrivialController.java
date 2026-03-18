@@ -18,23 +18,32 @@ public class TrivialController {
 
     public void handle(HttpExchange exchange) throws IOException {
         addCorsHeaders(exchange);
+        String method = exchange.getRequestMethod();
         String path = exchange.getRequestURI().getPath();
+
+        if (method.equalsIgnoreCase("OPTIONS")) {
+            exchange.sendResponseHeaders(204, -1);
+            return;
+        }
         try {
 
             if (path.equals("/trivial/easy")) {
                 JsonObject result = TrivialService.getPregunta(path, client);
+                addCorsHeaders(exchange);
                 sendResponse(exchange, 200, result.toString());
                 return;
             }
 
             if (path.equals("/trivial/medium")) {
                 JsonObject result = TrivialService.getPregunta(path, client);
+                addCorsHeaders(exchange);
                 sendResponse(exchange, 200, result.toString());
                 return;
             }
 
             if (path.equals("/trivial/hard")) {
                 JsonObject result = TrivialService.getPregunta(path, client);
+                addCorsHeaders(exchange);
                 sendResponse(exchange, 200, result.toString());
                 return;
             }
@@ -46,18 +55,18 @@ public class TrivialController {
         }
     }
 
-    private void sendResponse(HttpExchange exchange, int status, String body) throws IOException {
-        exchange.getResponseHeaders().add("Content-Type", "application/json");
-        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
-        exchange.sendResponseHeaders(status, bytes.length);
-        OutputStream os = exchange.getResponseBody();
-        os.write(bytes);
-        os.close();
-    }
-
     private static void addCorsHeaders(HttpExchange exchange) {
         exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
         exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    }
+
+    private static void sendResponse(HttpExchange exchange, int status, String body) throws IOException {
+        exchange.getResponseHeaders().add("Content-Type", "application/json; charset=UTF-8");
+        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
+        exchange.sendResponseHeaders(status, bytes.length);
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(bytes);
+        }
     }
 }
